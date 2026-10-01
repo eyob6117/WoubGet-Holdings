@@ -1,0 +1,27 @@
+---
+import { airlines, brands } from '../data/site';
+---
+
+<section id="partners" class="relative py-24 lg:py-32">
+  <div class="container-x grid gap-12 lg:grid-cols-12">
+    <div class="lg:col-span-5">
+      <p class="eyebrow text-brand" data-reveal>Global partners</p>
+      <h2 class="display mt-5 text-4xl leading-[1.05] sm:text-5xl" data-reveal>Working with the world’s <em class="italic">leading</em> names.</h2>
+      <p class="mt-6 text-lg leading-relaxed text-ink/65" data-reveal>Technology transfer is the building block of Ethiopia’s fast track to development. Our companies work with and learn from global pioneers, as general sales agents, authorized dealers and distributors.</p>
+    </div>
+    <div class="space-y-6 lg:col-span-6 lg:col-start-7">
+      <div class="rounded-3xl border border-ink/8 bg-white/70 p-8" data-reveal>
+        <h3 class="text-xs font-semibold tracking-[0.16em] text-ink/45 uppercase">Airlines represented by the group</h3>
+        <ul class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
+          {airlines.map((a) => <li class="rounded-2xl border border-ink/8 bg-cream px-4 py-4 text-center text-sm font-semibold text-ink/80">{a}</li>)}
+        </ul>
+      </div>
+      <div class="rounded-3xl border border-ink/8 bg-white/70 p-8" data-reveal style="--delay:100ms">
+        <h3 class="text-xs font-semibold tracking-[0.16em] text-ink/45 uppercase">Brands we represent and distribute</h3>
+        <ul class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
+          {brands.map((b) => <li class="rounded-2xl border border-ink/8 bg-cream px-4 py-4 text-center text-sm font-semibold text-ink/80">{b}</li>)}
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>

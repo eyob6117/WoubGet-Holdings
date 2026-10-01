@@ -1,0 +1,18 @@
+---
+// A member company's badge: its own mark where we have one, otherwise a monogram in its brand colour.
+import FlowerportMark from './FlowerportMark.astro';
+import type { Company } from '../data/site';
+interface Props { company: Company; class?: string }
+const { company, class: className = 'h-12 w-12' } = Astro.props;
+const small = company.monogram.length > 2;
+---
+
+{company.slug === 'flowerport' ? (
+  <span class:list={['grid shrink-0 place-items-center rounded-2xl bg-white', className]}><FlowerportMark class="h-[78%] w-[78%]" /></span>
+) : (
+  <span
+    class:list={['grid shrink-0 place-items-center rounded-2xl font-display font-semibold text-white', small ? 'text-[0.8rem] tracking-wide' : 'text-lg', className]}
+    style={`background:${company.accent}`}
+    aria-hidden="true"
+  >{company.monogram}</span>
+)}

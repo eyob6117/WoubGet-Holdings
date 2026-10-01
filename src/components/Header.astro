@@ -1,0 +1,130 @@
+---
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+import CompanyBadge from './CompanyBadge.astro';
+import { nav, companies, group } from '../data/site';
+import { url } from '../lib/url';
+---
+
+<header id="site-header" data-state="top" class="group/h fixed inset-x-0 top-0 z-50 transition-transform duration-500 lg:data-[state=scrolled]:-translate-y-9">
+  <div class="hidden border-b border-white/10 bg-ink text-[0.72rem] text-white/60 lg:block">
+    <div class="container-x flex h-9 items-center justify-between">
+      <p class="flex items-center gap-2">
+        <span class="relative flex h-2 w-2"><span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-sky-400 opacity-60"></span><span class="relative inline-flex h-2 w-2 rounded-full bg-sky-400"></span></span>
+        {companies.length} companies · One group · Addis Ababa, Ethiopia
+      </p>
+      <div class="flex items-center gap-6">
+        <a href={`tel:${group.phones[0].replace(/\s/g, '')}`} class="hover:text-white">{group.phones[0]}</a>
+        <a href={`mailto:${group.email}`} class="hover:text-white">{group.email}</a>
+      </div>
+    </div>
+  </div>
+  <div class="border-b border-transparent transition-all duration-500 group-data-[state=scrolled]/h:border-ink/8 group-data-[state=scrolled]/h:bg-cream/85 group-data-[state=scrolled]/h:backdrop-blur-xl">
+    <div class="container-x flex h-[76px] items-center justify-between gap-8">
+      <a href={url('/')} aria-label="WoubGet Holdings home" class="relative">
+        <Logo tone="light" class="transition-opacity duration-300 group-data-[state=scrolled]/h:opacity-0" />
+        <Logo tone="dark" class="absolute inset-0 opacity-0 transition-opacity duration-300 group-data-[state=scrolled]/h:opacity-100" />
+      </a>
+      <nav aria-label="Primary" class="hidden lg:block">
+        <ul class="flex items-center gap-1 text-[0.86rem] font-medium text-white/80 group-data-[state=scrolled]/h:text-ink/75">
+          {nav.map((item) => (
+            <li>
+              <a href={url(item.href)} class="rounded-full px-3.5 py-2 transition hover:bg-white/10 hover:text-white group-data-[state=scrolled]/h:hover:bg-ink/5 group-data-[state=scrolled]/h:hover:text-ink">
+                {item.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+      <div class="flex items-center gap-3">
+        <div class="relative hidden sm:block">
+          <button id="companies-toggle" type="button" class="btn-primary !py-2.5" aria-expanded="false" aria-controls="companies-panel">
+            <Icon name="grid" class="h-4 w-4" /> Our companies
+          </button>
+          <div id="companies-panel" hidden class="absolute top-[calc(100%+12px)] right-0 w-[min(92vw,640px)] rounded-3xl border border-ink/8 bg-white p-3 text-ink shadow-[0_30px_80px_-20px_rgba(10,22,40,0.45)]">
+            <ul class="grid gap-1 sm:grid-cols-2">
+              {companies.map((c) => (
+                <li>
+                  <a href={url(`/companies/${c.slug}/`)} class="flex items-center gap-3 rounded-2xl p-2.5 transition hover:bg-cream">
+                    <CompanyBadge company={c} class="h-10 w-10" />
+                    <span class="min-w-0">
+                      <span class="block truncate text-sm font-semibold">{c.name}</span>
+                      <span class="block truncate text-xs text-ink/50">{c.sector}</span>
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+            <a href={url('/#companies')} class="mt-2 flex items-center justify-between rounded-2xl bg-ink px-4 py-3 text-sm font-semibold text-cream hover:bg-navy">
+              View the full directory <Icon name="arrow" class="h-4 w-4" />
+            </a>
+          </div>
+        </div>
+        <button id="menu-open" type="button" class="grid h-11 w-11 place-items-center rounded-full border border-white/20 text-white group-data-[state=scrolled]/h:border-ink/15 group-data-[state=scrolled]/h:text-ink lg:hidden" aria-label="Open menu" aria-controls="mobile-menu" aria-expanded="false">
+          <Icon name="menu" />
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<dialog id="mobile-menu" class="m-0 h-dvh max-h-none w-full max-w-none overflow-y-auto bg-ink p-0 text-cream backdrop:bg-ink/60">
+  <div class="container-x flex h-[76px] items-center justify-between">
+    <Logo tone="light" />
+    <button id="menu-close" type="button" class="grid h-11 w-11 place-items-center rounded-full border border-white/20" aria-label="Close menu"><Icon name="close" /></button>
+  </div>
+  <nav aria-label="Mobile" class="container-x mt-6 pb-12">
+    <ul class="divide-y divide-white/10 border-y border-white/10">
+      {nav.map((item) => (
+        <li><a href={url(item.href)} class="flex items-center justify-between py-5 font-display text-3xl">{item.label}<Icon name="arrowUpRight" class="h-5 w-5 text-sky" /></a></li>
+      ))}
+    </ul>
+    <p class="mt-10 text-xs font-semibold tracking-[0.16em] text-cream/45 uppercase">Our companies</p>
+    <ul class="mt-4 grid gap-2">
+      {companies.map((c) => (
+        <li>
+          <a href={url(`/companies/${c.slug}/`)} class="flex items-center gap-3 rounded-2xl border border-white/10 p-2.5">
+            <CompanyBadge company={c} class="h-9 w-9" />
+            <span class="text-sm font-semibold">{c.name}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+</dialog>
+
+<script>
+  const header = document.getElementById('site-header')!;
+  const onScroll = () => (header.dataset.state = window.scrollY > 40 ? 'scrolled' : 'top');
+  onScroll();
+  addEventListener('scroll', onScroll, { passive: true });
+
+  // Companies quick-switcher
+  const toggle = document.getElementById('companies-toggle')!;
+  const panel = document.getElementById('companies-panel')!;
+  const setOpen = (open: boolean) => {
+    panel.hidden = !open;
+    toggle.setAttribute('aria-expanded', String(open));
+  };
+  toggle.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
+  document.addEventListener('click', (e) => {
+    if (!panel.hidden && !panel.parentElement!.contains(e.target as Node)) setOpen(false);
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !panel.hidden) {
+      setOpen(false);
+      toggle.focus();
+    }
+  });
+  panel.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setOpen(false)));
+
+  const dialog = document.getElementById('mobile-menu') as HTMLDialogElement;
+  const openBtn = document.getElementById('menu-open')!;
+  openBtn.addEventListener('click', () => {
+    dialog.showModal();
+    openBtn.setAttribute('aria-expanded', 'true');
+  });
+  document.getElementById('menu-close')!.addEventListener('click', () => dialog.close());
+  dialog.addEventListener('close', () => openBtn.setAttribute('aria-expanded', 'false'));
+  dialog.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => dialog.close()));
+</script>

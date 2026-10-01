@@ -1,0 +1,145 @@
+---
+import Base from '../../layouts/Base.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import Contact from '../../components/Contact.astro';
+import Icon from '../../components/Icon.astro';
+import CompanyBadge from '../../components/CompanyBadge.astro';
+import { companies, group, type Company } from '../../data/site';
+import { url } from '../../lib/url';
+
+export function getStaticPaths() {
+  return companies.map((company) => ({ params: { slug: company.slug }, props: { company } }));
+}
+
+interface Props { company: Company }
+const { company } = Astro.props;
+const i = companies.indexOf(company);
+const prev = companies[(i - 1 + companies.length) % companies.length];
+const next = companies[(i + 1) % companies.length];
+const siblings = companies.filter((c) => c.sector === company.sector && c !== company);
+---
+
+<Base title={`${company.name} | A ${group.name} company`} description={`${company.intro} ${company.tagline}`}>
+  <Header />
+  <main id="main" style={`--accent:${company.accent}`}>
+    <section class="grain relative isolate overflow-hidden bg-ink pt-[76px] text-cream lg:pt-[112px]">
+      <div aria-hidden="true" class="absolute inset-0 -z-10">
+        <div class="absolute -top-40 right-[-10%] h-[620px] w-[620px] rounded-full bg-(--accent) opacity-25 blur-[140px]"></div>
+        <div class="absolute bottom-[-30%] left-[-10%] h-[480px] w-[480px] rounded-full bg-steel/70 blur-[120px]"></div>
+      </div>
+      <div class="container-x pt-10 pb-20 lg:pt-14 lg:pb-24">
+        <nav aria-label="Breadcrumb" class="text-xs text-cream/55" data-reveal>
+          <ol class="flex flex-wrap items-center gap-2">
+            <li><a href={url('/')} class="hover:text-white">{group.name}</a></li>
+            <li aria-hidden="true">/</li>
+            <li><a href={url('/#companies')} class="hover:text-white">Companies</a></li>
+            <li aria-hidden="true">/</li>
+            <li aria-current="page" class="text-cream/80">{company.name}</li>
+          </ol>
+        </nav>
+        <div class="mt-10 grid gap-12 lg:grid-cols-12 lg:items-end">
+          <div class="lg:col-span-8">
+            <div class="flex items-center gap-4" data-reveal>
+              <CompanyBadge company={company} class="h-16 w-16" />
+              <p class="eyebrow text-sky">{company.sector} · A {group.name} company</p>
+            </div>
+            <h1 class="display mt-8 text-[clamp(2.6rem,5vw,4.4rem)] leading-[1.02]" data-reveal style="--delay:80ms">{company.name}</h1>
+            <p class="mt-6 max-w-2xl text-lg leading-relaxed text-cream/70" data-reveal style="--delay:160ms">{company.tagline}</p>
+            <div class="mt-10 flex flex-wrap gap-3" data-reveal style="--delay:240ms">
+              {company.website ? (
+                <a href={company.website} target="_blank" rel="noopener" class="btn-primary">Visit {company.shortName} website <Icon name="external" class="h-4 w-4" /><span class="sr-only">(opens in a new tab)</span></a>
+              ) : (
+                <a href="#contact" class="btn-primary">Contact {company.shortName} <Icon name="arrow" class="h-4 w-4" /></a>
+              )}
+              <a href="#services" class="btn-ghost-light">Services</a>
+            </div>
+          </div>
+        </div>
+        <dl class="mt-16 grid gap-px overflow-hidden rounded-3xl border border-white/10 bg-white/10 sm:grid-cols-3" data-reveal style="--delay:320ms">
+          {company.highlights.map((h) => (
+            <div class="bg-ink/80 p-7">
+              <dt class="text-xs leading-snug text-cream/55">{h.label}</dt>
+              <dd class="display order-first mb-2 text-3xl sm:text-4xl">{h.value}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+    </section>
+
+    {company.website && (
+      <div class="border-b border-ink/8 bg-sky/50">
+        <div class="container-x flex flex-col items-start justify-between gap-3 py-5 text-sm sm:flex-row sm:items-center">
+          <p class="flex items-center gap-2 text-ink/75"><span class="h-2 w-2 rounded-full bg-emerald-500"></span>{company.name} has its own website with full details, services and booking.</p>
+          <a href={company.website} target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 font-semibold text-brand hover:text-brand-deep">{company.website.replace(/^https?:\/\//, '').replace(/\/$/, '')} <Icon name="external" class="h-4 w-4" /></a>
+        </div>
+      </div>
+    )}
+
+    <section id="about" class="py-24 lg:py-28">
+      <div class="container-x grid gap-12 lg:grid-cols-12">
+        <div class="lg:col-span-5">
+          <p class="eyebrow text-(--accent)" data-reveal>About {company.shortName}</p>
+          <h2 class="display mt-5 text-3xl leading-[1.12] sm:text-4xl" data-reveal>{company.intro}</h2>
+        </div>
+        <div class="space-y-6 text-lg leading-relaxed text-ink/70 lg:col-span-6 lg:col-start-7" data-reveal style="--delay:100ms">
+          {company.about.map((p) => <p>{p}</p>)}
+          {company.facts && (
+            <div class="pt-2">
+              <p class="text-xs font-semibold tracking-[0.14em] text-ink/45 uppercase">{company.facts.label}</p>
+              <ul class="mt-3 flex flex-wrap gap-2">
+                {company.facts.items.map((f) => <li class="rounded-full border border-ink/10 bg-white px-3.5 py-1.5 text-sm text-ink/70">{f}</li>)}
+              </ul>
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+
+    <section id="services" class="bg-sand/60 py-24 lg:py-28">
+      <div class="container-x">
+        <p class="eyebrow text-(--accent)" data-reveal>What we offer</p>
+        <h2 class="display mt-5 text-4xl leading-[1.05] sm:text-5xl" data-reveal>Services</h2>
+        <ul class="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {company.services.map((s, n) => (
+            <li class="flex items-start gap-4 rounded-3xl border border-ink/8 bg-white p-6" data-reveal style={`--delay:${(n % 3) * 70}ms`}>
+              <span class="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-(--accent) text-white"><Icon name="check" class="h-4 w-4" /></span>
+              <span class="pt-1.5 font-medium leading-snug">{s}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    <section class="py-24 lg:py-28">
+      <div class="container-x">
+        <div class="flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
+          <div>
+            <p class="eyebrow text-brand" data-reveal>{group.name}</p>
+            <h2 class="display mt-5 text-4xl leading-[1.05] sm:text-5xl" data-reveal>{siblings.length ? `More in ${company.sector}` : 'Sister companies'}</h2>
+          </div>
+          <a href={url('/#companies')} class="btn-ghost shrink-0">All companies <Icon name="arrow" class="h-4 w-4" /></a>
+        </div>
+        <ul class="mt-12 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+          {(siblings.length ? siblings : [prev, next]).slice(0, 3).map((c) => (
+            <li class="group relative flex min-w-0 items-center gap-5 rounded-3xl border border-ink/8 bg-white p-6 transition hover:-translate-y-1 hover:shadow-[0_30px_60px_-30px_rgba(10,22,40,0.35)]">
+              <CompanyBadge company={c} class="h-12 w-12" />
+              <div class="min-w-0 flex-1">
+                <a href={url(`/companies/${c.slug}/`)} class="font-semibold after:absolute after:inset-0">{c.name}</a>
+                <p class="mt-1 truncate text-sm text-ink/55">{c.tagline}</p>
+              </div>
+              <Icon name="arrow" class="h-5 w-5 shrink-0 text-ink/40 transition group-hover:translate-x-1 group-hover:text-ink" />
+            </li>
+          ))}
+        </ul>
+        <nav aria-label="Company navigation" class="mt-12 flex justify-between gap-4 border-t border-ink/8 pt-8 text-sm font-semibold">
+          <a href={url(`/companies/${prev.slug}/`)} class="inline-flex items-center gap-2 hover:text-brand"><Icon name="arrow" class="h-4 w-4 rotate-180" /> {prev.name}</a>
+          <a href={url(`/companies/${next.slug}/`)} class="inline-flex items-center gap-2 text-right hover:text-brand">{next.name} <Icon name="arrow" class="h-4 w-4" /></a>
+        </nav>
+      </div>
+    </section>
+
+    <Contact preselect={company.name} />
+  </main>
+  <Footer />
+</Base>

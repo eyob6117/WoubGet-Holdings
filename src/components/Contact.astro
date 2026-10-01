@@ -1,0 +1,100 @@
+---
+import Icon from './Icon.astro';
+import { group, companies } from '../data/site';
+// Set PUBLIC_CONTACT_ENDPOINT (e.g. a Formspree or CRM webhook URL) to post enquiries directly.
+// Without it, the form falls back to opening a pre-filled email to the group address.
+const endpoint = import.meta.env.PUBLIC_CONTACT_ENDPOINT ?? '';
+interface Props { preselect?: string }
+const { preselect } = Astro.props;
+---
+
+<section id="contact" class="grain relative overflow-hidden bg-navy py-24 text-cream lg:py-32">
+  <div aria-hidden="true" class="absolute -bottom-40 -left-40 h-[600px] w-[600px] rounded-full bg-brand/25 blur-[140px]"></div>
+  <div class="container-x relative grid gap-14 lg:grid-cols-12">
+    <div class="lg:col-span-5">
+      <p class="eyebrow text-sky" data-reveal>Contact</p>
+      <h2 class="display mt-5 text-4xl leading-[1.05] sm:text-5xl" data-reveal>One address for every WoubGet company.</h2>
+      <p class="mt-6 text-cream/70" data-reveal>Tell us which company you need and what you are looking for. Our head office in Addis Ababa will route your enquiry to the right team.</p>
+      <ul class="mt-10 space-y-5 text-sm" data-reveal>
+        <li class="flex items-center gap-4"><span class="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white/10"><Icon name="mail" /></span><a href={`mailto:${group.email}`} class="hover:text-sky">{group.email}</a></li>
+        <li class="flex items-start gap-4">
+          <span class="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white/10"><Icon name="phone" /></span>
+          <span class="flex flex-wrap gap-x-4 gap-y-1 pt-3">{group.phones.map((p) => <a href={`tel:${p.replace(/\s/g, '')}`} class="hover:text-sky">{p}</a>)}</span>
+        </li>
+        <li class="flex items-center gap-4"><span class="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white/10"><Icon name="pin" /></span><span>{group.address}<br /><span class="text-cream/55">{group.poBox}</span></span></li>
+      </ul>
+    </div>
+
+    <div class="lg:col-span-7" data-reveal style="--delay:120ms">
+      <form id="contact-form" data-endpoint={endpoint} data-email={group.email} class="rounded-3xl border border-white/10 bg-ink/40 p-6 backdrop-blur-xl sm:p-10" novalidate>
+        <div class="grid gap-5 sm:grid-cols-2">
+          <label class="block text-sm">
+            <span class="mb-2 block text-cream/70">Full name *</span>
+            <input name="name" required autocomplete="name" class="field" placeholder="Abebe Kebede" />
+          </label>
+          <label class="block text-sm">
+            <span class="mb-2 block text-cream/70">Organisation</span>
+            <input name="organisation" autocomplete="organization" class="field" placeholder="Company or institution" />
+          </label>
+          <label class="block text-sm">
+            <span class="mb-2 block text-cream/70">Email *</span>
+            <input name="email" type="email" required autocomplete="email" class="field" placeholder="you@company.com" />
+          </label>
+          <label class="block text-sm">
+            <span class="mb-2 block text-cream/70">Phone</span>
+            <input name="phone" type="tel" autocomplete="tel" class="field" placeholder="+251 …" />
+          </label>
+        </div>
+        <label class="mt-6 block text-sm">
+          <span class="mb-2 block text-cream/70">Company you’d like to reach</span>
+          <select name="company" class="field appearance-none bg-[url('data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2024%2024%22%20fill=%22none%22%20stroke=%22%23fff%22%20stroke-width=%221.6%22%3E%3Cpath%20d=%22m6%209%206%206%206-6%22/%3E%3C/svg%3E')] bg-[length:18px] bg-[right_1rem_center] bg-no-repeat">
+            <option class="bg-ink" value="WoubGet Holdings (general)">WoubGet Holdings (general enquiry)</option>
+            {companies.map((c) => <option class="bg-ink" value={c.name} selected={c.name === preselect}>{c.name}</option>)}
+          </select>
+        </label>
+        <label class="mt-6 block text-sm">
+          <span class="mb-2 block text-cream/70">Message *</span>
+          <textarea name="message" required rows="4" class="field resize-none" placeholder="How can we help?"></textarea>
+        </label>
+        <div class="mt-8 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+          <p class="text-xs text-cream/45">By submitting you agree to be contacted about your enquiry.</p>
+          <button type="submit" class="btn-primary">Send enquiry <Icon name="arrow" class="h-4 w-4" /></button>
+        </div>
+        <p id="contact-status" role="status" class="mt-4 hidden rounded-xl px-4 py-3 text-sm"></p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<script>
+  const form = document.getElementById('contact-form') as HTMLFormElement;
+  const status = document.getElementById('contact-status')!;
+  const show = (msg: string, ok: boolean) => {
+    status.textContent = msg;
+    status.className = `mt-4 rounded-xl px-4 py-3 text-sm ${ok ? 'bg-emerald-400/15 text-emerald-200' : 'bg-red-500/20 text-red-100'}`;
+  };
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!form.checkValidity()) {
+      form.querySelector<HTMLInputElement>(':invalid')?.focus();
+      show('Please complete the required fields with a valid email address.', false);
+      return;
+    }
+    const data = new FormData(form);
+    const endpoint = form.dataset.endpoint;
+    if (endpoint) {
+      try {
+        const res = await fetch(endpoint, { method: 'POST', body: data, headers: { Accept: 'application/json' } });
+        if (!res.ok) throw new Error(String(res.status));
+        form.reset();
+        show('Thank you. Your enquiry has been received and the right team will be in touch shortly.', true);
+      } catch {
+        show('Something went wrong sending your enquiry. Please email us directly.', false);
+      }
+      return;
+    }
+    const body = [...data.entries()].map(([k, v]) => `${k}: ${v}`).join('\n');
+    location.href = `mailto:${form.dataset.email}?subject=${encodeURIComponent(`Enquiry for ${data.get('company')}`)}&body=${encodeURIComponent(body)}`;
+    show('Your email client should open with your enquiry pre-filled.', true);
+  });
+</script>
