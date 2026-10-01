@@ -1,0 +1,78 @@
+---
+import Icon from './Icon.astro';
+import CompanyBadge from './CompanyBadge.astro';
+import { companies, sectors } from '../data/site';
+import { url } from '../lib/url';
+---
+
+<section id="companies" class="relative bg-sand/60 py-24 lg:py-32">
+  <div class="container-x">
+    <div class="flex flex-col justify-between gap-8 lg:flex-row lg:items-end">
+      <div class="max-w-2xl">
+        <p class="eyebrow text-brand" data-reveal>Our companies</p>
+        <h2 class="display mt-5 text-4xl leading-[1.05] sm:text-5xl" data-reveal>Every WoubGet company, in one place.</h2>
+        <p class="mt-5 text-lg leading-relaxed text-ink/65" data-reveal>Open a company’s page for its services and contacts, or go straight to its own website.</p>
+      </div>
+      <div role="group" aria-label="Filter by sector" class="flex flex-wrap gap-2" data-reveal>
+        <button type="button" data-filter="all" aria-pressed="true" class="filter-btn">All</button>
+        {sectors.map((s) => <button type="button" data-filter={s.name} aria-pressed="false" class="filter-btn">{s.name}</button>)}
+      </div>
+    </div>
+
+    <ul id="company-grid" class="mt-14 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+      {companies.map((c, i) => (
+        <li data-sector={c.sector} data-reveal style={`--delay:${(i % 3) * 80}ms;--accent:${c.accent}`} class="group relative flex flex-col overflow-hidden rounded-3xl border border-ink/8 bg-white p-7 transition duration-500 ease-out-expo hover:-translate-y-1 hover:shadow-[0_30px_60px_-30px_rgba(10,22,40,0.35)]">
+          <span aria-hidden="true" class="absolute inset-x-0 top-0 h-1 bg-(--accent) opacity-0 transition group-hover:opacity-100"></span>
+          <div class="flex items-start justify-between gap-4">
+            <CompanyBadge company={c} class="h-14 w-14" />
+            {c.website ? (
+              <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-[0.7rem] font-semibold text-emerald-700"><span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>Website live</span>
+            ) : (
+              <span class="rounded-full bg-ink/5 px-3 py-1 text-[0.7rem] font-semibold text-ink/50">Website coming soon</span>
+            )}
+          </div>
+          <p class="mt-8 text-xs font-semibold tracking-[0.14em] text-ink/45 uppercase">{c.sector}</p>
+          <h3 class="mt-2 text-2xl font-semibold leading-tight">
+            <a href={url(`/companies/${c.slug}/`)} class="after:absolute after:inset-0">{c.name}</a>
+          </h3>
+          <p class="mt-3 text-sm leading-relaxed text-ink/60">{c.tagline}</p>
+          <div class="relative z-10 mt-auto flex flex-wrap items-center gap-x-5 gap-y-2 pt-8 text-sm font-semibold">
+            <a href={url(`/companies/${c.slug}/`)} class="inline-flex items-center gap-1.5 text-ink hover:text-brand">Company page <Icon name="arrow" class="h-4 w-4" /></a>
+            {c.website && (
+              <a href={c.website} target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 text-brand hover:text-brand-deep">Visit website <Icon name="external" class="h-4 w-4" /><span class="sr-only">(opens in a new tab)</span></a>
+            )}
+          </div>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .filter-btn {
+    border-radius: 9999px;
+    border: 1px solid rgb(10 22 40 / 0.12);
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: rgb(10 22 40 / 0.7);
+    transition: all 0.3s var(--ease-out-expo);
+  }
+  .filter-btn:hover { border-color: var(--color-ink); color: var(--color-ink); }
+  .filter-btn[aria-pressed='true'] { background: var(--color-ink); border-color: var(--color-ink); color: var(--color-cream); }
+</style>
+
+<script>
+  const buttons = document.querySelectorAll<HTMLButtonElement>('[data-filter]');
+  const cards = document.querySelectorAll<HTMLElement>('#company-grid > li');
+  buttons.forEach((btn) =>
+    btn.addEventListener('click', () => {
+      const f = btn.dataset.filter;
+      buttons.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+      cards.forEach((card) => {
+        card.hidden = f !== 'all' && card.dataset.sector !== f;
+        card.classList.add('is-visible');
+      });
+    })
+  );
+</script>
