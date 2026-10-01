@@ -8,7 +8,7 @@ Built with [Astro](https://astro.build) and [Tailwind CSS v4](https://tailwindcs
 
 ## What's on the site
 
-- **Home** (`/`): hero with the group "constellation" linking to each company · company directory with sector filters · about the group and key figures · four sectors · airlines and brands represented · group contact form · footer with every company.
+- **Home** (`/`): hero with the group "constellation" linking to each company · company directory with sector filters · about the group with the headquarters photo, what sets it apart and key figures · airlines and brands represented · group contact form · footer with every company.
 - **A page per company** (`/companies/<slug>/`): overview, highlights, services, key facts, sister companies, and a contact form pre-set to that company.
 - **"Our companies" switcher** in the header, on every page, to jump to any company.
 
@@ -16,7 +16,7 @@ Where a company has its own website, its card, page and footer show **Visit webs
 
 ## Adding or linking a company website
 
-All content lives in [`src/data/site.ts`](src/data/site.ts). When a company's own site goes live, set its `website`:
+All content lives in [`src/data/site.ts`](src/data/site.ts), written so each fact appears once per page (see the note at the top of the file). The headquarters photo is `src/assets/headquarters.jpg`; Astro serves it as responsive AVIF/WebP. When a company's own site goes live, set its `website`:
 
 ```ts
 { slug: 'tradepath', name: 'Tradepath International', /* … */ website: 'https://tradepath.example' },

@@ -20,7 +20,7 @@ const next = companies[(i + 1) % companies.length];
 const siblings = companies.filter((c) => c.sector === company.sector && c !== company);
 ---
 
-<Base title={`${company.name} | A ${group.name} company`} description={`${company.intro} ${company.tagline}`}>
+<Base title={`${company.name} | A ${group.name} company`} description={`${company.tagline} ${company.intro}`}>
   <Header />
   <main id="main" style={`--accent:${company.accent}`}>
     <section class="grain relative isolate overflow-hidden bg-ink pt-[76px] text-cream lg:pt-[112px]">
@@ -45,7 +45,7 @@ const siblings = companies.filter((c) => c.sector === company.sector && c !== co
               <p class="eyebrow text-sky">{company.sector} · A {group.name} company</p>
             </div>
             <h1 class="display mt-8 text-[clamp(2.6rem,5vw,4.4rem)] leading-[1.02]" data-reveal style="--delay:80ms">{company.name}</h1>
-            <p class="mt-6 max-w-2xl text-lg leading-relaxed text-cream/70" data-reveal style="--delay:160ms">{company.tagline}</p>
+            <p class="mt-6 max-w-2xl text-lg leading-relaxed text-cream/70" data-reveal style="--delay:160ms">{company.intro}</p>
             <div class="mt-10 flex flex-wrap gap-3" data-reveal style="--delay:240ms">
               {company.website ? (
                 <a href={company.website} target="_blank" rel="noopener" class="btn-primary">Visit {company.shortName} website <Icon name="external" class="h-4 w-4" /><span class="sr-only">(opens in a new tab)</span></a>
@@ -67,20 +67,12 @@ const siblings = companies.filter((c) => c.sector === company.sector && c !== co
       </div>
     </section>
 
-    {company.website && (
-      <div class="border-b border-ink/8 bg-sky/50">
-        <div class="container-x flex flex-col items-start justify-between gap-3 py-5 text-sm sm:flex-row sm:items-center">
-          <p class="flex items-center gap-2 text-ink/75"><span class="h-2 w-2 rounded-full bg-emerald-500"></span>{company.name} has its own website with full details, services and booking.</p>
-          <a href={company.website} target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 font-semibold text-brand hover:text-brand-deep">{company.website.replace(/^https?:\/\//, '').replace(/\/$/, '')} <Icon name="external" class="h-4 w-4" /></a>
-        </div>
-      </div>
-    )}
 
     <section id="about" class="py-24 lg:py-28">
       <div class="container-x grid gap-12 lg:grid-cols-12">
         <div class="lg:col-span-5">
           <p class="eyebrow text-(--accent)" data-reveal>About {company.shortName}</p>
-          <h2 class="display mt-5 text-3xl leading-[1.12] sm:text-4xl" data-reveal>{company.intro}</h2>
+          <h2 class="display mt-5 text-3xl leading-[1.12] sm:text-4xl" data-reveal>{company.tagline}</h2>
         </div>
         <div class="space-y-6 text-lg leading-relaxed text-ink/70 lg:col-span-6 lg:col-start-7" data-reveal style="--delay:100ms">
           {company.about.map((p) => <p>{p}</p>)}

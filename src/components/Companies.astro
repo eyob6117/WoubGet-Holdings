@@ -11,11 +11,11 @@ import { url } from '../lib/url';
       <div class="max-w-2xl">
         <p class="eyebrow text-brand" data-reveal>Our companies</p>
         <h2 class="display mt-5 text-4xl leading-[1.05] sm:text-5xl" data-reveal>Every WoubGet company, in one place.</h2>
-        <p class="mt-5 text-lg leading-relaxed text-ink/65" data-reveal>Open a company’s page for its services and contacts, or go straight to its own website.</p>
+        <p class="mt-5 text-lg leading-relaxed text-ink/65" data-reveal>See what each company offers, or go straight to its own website.</p>
       </div>
       <div role="group" aria-label="Filter by sector" class="flex flex-wrap gap-2" data-reveal>
         <button type="button" data-filter="all" aria-pressed="true" class="filter-btn">All</button>
-        {sectors.map((s) => <button type="button" data-filter={s.name} aria-pressed="false" class="filter-btn">{s.name}</button>)}
+        {sectors.map((s) => <button type="button" data-filter={s} aria-pressed="false" class="filter-btn">{s}</button>)}
       </div>
     </div>
 
